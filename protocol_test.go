@@ -394,6 +394,13 @@ session1 BGP        ---        up     14:07:29.523    Established
 session2 BGP        ---        up     12:18:11.199    Established
 `
 
+const testInputShowProtocolMixed = `Name       Proto      Table      State  Since         Info
+session1 BGP        ---        up     2024-08-30    Established   
+session2 BGP        ---        up     2024-08-26    Established   
+session3  Static     master6    up     03:25:55.168  
+session4    BGP        ---        start  03:25:55.168  Passive
+`
+
 func mustParseTime(layout, s string) time.Time {
 	t, err := time.Parse(layout, s)
 	if err != nil {
@@ -444,6 +451,27 @@ func TestParseShowProtocols(t *testing.T) {
 		},
 		{
 			In: testInputShowProtocolsShortRunning,
+			Protocols: []Protocol{
+				{
+					Name:  "session1",
+					Proto: "BGP",
+					Table: "---",
+					State: "up",
+					Since: mustParseTime("2006-01-02", "2024-07-22"),
+					Info:  "Established",
+				},
+				{
+					Name:  "session2",
+					Proto: "BGP",
+					Table: "---",
+					State: "up",
+					Since: mustParseTime("2006-01-02", "2024-07-22"),
+					Info:  "Established",
+				},
+			},
+		},
+		{
+			In: testInputShowProtocolMixed,
 			Protocols: []Protocol{
 				{
 					Name:  "session1",
